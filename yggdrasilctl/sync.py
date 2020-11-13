@@ -32,7 +32,7 @@ class AdminAPI:
         conn = self._get_connection()
         json.dump(req, conn.makefile('w'))
         response = json.load(conn.makefile('r'))
-        if not self.keepalive():
+        if not self.keepalive:
             conn.close()
         if not response['status']=='success':
             if 'error' in response:
