@@ -8,7 +8,8 @@ This library provides a wrapper for Yggdrasil Admin API.
 
 # Usage
 ## sync version
-```from pprint import pprint
+```python3
+from pprint import pprint
 from yggdrasilctl.sync import AdminAPI, APIError
 
 api = AdminAPI() #unless otherwise specified it will connects to localhost:9001
@@ -18,7 +19,8 @@ except APIError as e:
     print(e)
 ```
 ## async version
-```import asyncio
+```python3
+import asyncio
 from pprint import pprint
 from yggdrasilctl import AdminAPI, APIError
 
