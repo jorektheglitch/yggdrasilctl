@@ -14,9 +14,11 @@ from yggdrasilctl.sync import AdminAPI, APIError
 
 api = AdminAPI() #unless otherwise specified it will connects to localhost:9001
 try:
-    pprint(api.getSelf())
+    info = api.getSelf()
 except APIError as e:
     print(e)
+else:
+    pprint(info)
 ```
 ## async version
 ```python3
@@ -27,13 +29,18 @@ from yggdrasilctl import AdminAPI, APIError
 async def main():
     api = AdminAPI()
     try:
-        pprint(await api.getSelf())
+        info = await api.getSelf()
     except APIError as e:
         print(e)
+    else:
+        pprint(info)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
 ```
 
 # Detailed description of API methods
-For deatails see [documentation](https://yggdrasil-network.github.io/admin.html) of Admin API.
+For details see [documentation](https://yggdrasil-network.github.io/admin.html) of Admin API.
+
+# Links
+This library on [PyPI](https://pypi.org/project/yggdrasilctl/)
