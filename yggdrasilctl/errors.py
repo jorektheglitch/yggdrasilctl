@@ -1,0 +1,1 @@
+class APIError(Exception): pass
