@@ -1,13 +1,13 @@
 This library provides a wrapper for Yggdrasil Admin API.
 
-#Installation
-##for Linux
+# Installation
+## for Linux
 ```pip3 install yggdrasilctl```
-##for Windows
+## for Windows
 ```pip install yggdrasilctl```
 
-#Usage
-##sync version
+# Usage
+## sync version
 ```from pprint import pprint
 from yggdrasilctl.sync import AdminAPI, APIError
 
@@ -16,8 +16,7 @@ try:
     pprint(api.getSelf())
 except APIError as e:
     print(e)```
-
-##async version
+## async version
 ```import asyncio
 from pprint import pprint
 from yggdrasilctl import AdminAPI, APIError
@@ -32,5 +31,5 @@ async def main():
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())```
 
-#Detailed description of API methods
+# Detailed description of API methods
 For deatails see [documentation](https://yggdrasil-network.github.io/admin.html) of Admin API.
