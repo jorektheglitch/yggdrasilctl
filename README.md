@@ -43,4 +43,5 @@ loop.run_until_complete(main())
 For details see [documentation](https://yggdrasil-network.github.io/admin.html) of Admin API.
 
 # Links
+[Yggdrasil](https://yggdrasil-network.github.io/) project
 This library on [PyPI](https://pypi.org/project/yggdrasilctl/)
