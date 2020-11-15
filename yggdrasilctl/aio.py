@@ -1,9 +1,10 @@
 import asyncio
 import json
 
-from typing import List, Dict
+from datetime import datetime as dt, timedelta as td
+from typing import List, Dict, Any
 
-from .utils import preprocess
+from .utils import connect, preprocess
 from .errors import APIError
 
 
@@ -18,11 +19,9 @@ class AdminAPI:
 
     async def _send_request(self, method:str, **kwargs)->dict:
         req = {'request': method, **kwargs}
-        reader, writer = await asyncio.open_connection(*self.addr)
-        writer.write(json.dumps(req).encode())
-        response = json.loads(await reader.read())
-        writer.close()
-        await writer.wait_closed()
+        async with connect(*self.addr) as (reader, writer):
+            writer.write(json.dumps(req).encode())
+            response = json.loads(await reader.read())
         if not response['status']=='success':
             if 'error' in response:
                 response = response['error']
@@ -30,7 +29,7 @@ class AdminAPI:
         self.stats.update(response['response'])
         return response['response']
 
-    async def getSelf(self)->dict:
+    async def getSelf(self)->Dict[str, str]:
         """
         Returns exactly one record containing information about the 
         current Yggdrasil node.
@@ -52,7 +51,7 @@ class AdminAPI:
         addr, params = tuple(response.items())[0]
         return dict(addr=addr, **params)
 
-    async def getPeers(self)->List[Dict]:
+    async def getPeers(self)->List[Dict[str, Any[str, int, td]]]:
         """
         Returns one or more records containing information about active peer
         sessions. The first record typically refers to the current node.
@@ -72,7 +71,7 @@ class AdminAPI:
         response = raw['peers']
         return [preprocess(addr=addr, **params) for addr, params in response.items()]
 
-    async def getSwitchPeers(self)->List[Dict]:
+    async def getSwitchPeers(self)->List[Dict[str, Any[str, int]]]:
         """
         Returns zero or more records containing information about switch peers.
 
@@ -122,7 +121,7 @@ class AdminAPI:
         """
         return await self._send_request('removePeer', port=port)
 
-    async def getDHT(self)->List[Dict]:
+    async def getDHT(self)->List[Dict[str, Any[str, dt]]]:
         """
         Returns known nodes in the DHT.
 
@@ -138,7 +137,7 @@ class AdminAPI:
         response = raw['dht']
         return [preprocess(addr=addr, **params) for addr, params in response.items()]
 
-    async def getSessions(self)->List[Dict]:
+    async def getSessions(self)->List[Dict[str, Any[str, int, bool]]]:
         """
         Returns zero or more records containing information about open
         sessions between the current Yggdrasil node and other nodes. 
@@ -163,7 +162,7 @@ class AdminAPI:
         response = raw['sessions']
         return [preprocess(addr=addr, **params) for addr, params in response.items()]
 
-    async def getAllowedEncryptionPublicKeys(self)->list:
+    async def getAllowedEncryptionPublicKeys(self)->List[str]:
         """
         Returns list of strings containing the allowed box public keys.
 
@@ -215,7 +214,7 @@ class AdminAPI:
 
     async def DHTping(
         self, box_pub_key:str=None, coords:str=None, target:str=None
-    ) -> List[Dict]:
+    ) -> List[Dict[str, str]]:
         """
         Asks a remote node to respond with information from the DHT.
 
@@ -236,7 +235,9 @@ class AdminAPI:
             nodes = await self._send_request('DHTping', box_pub_key=box_pub_key, coords=coords)
         return [{'addr': addr, **stats} for addr, stats in nodes['nodes'].items()]
     
-    async def getNodeInfo(self, box_pub_key:str=None, coords:str=None)->dict:
+    async def getNodeInfo(
+        self, box_pub_key:str=None, coords:str=None
+    ) -> Any:
         """
         Asked a remote node for it's NodeInfo.
 
@@ -251,7 +252,7 @@ class AdminAPI:
         )
         return raw['nodeinfo']
 
-    async def getTunTap(self)->dict:
+    async def getTunTap(self)->Dict[str, Any[str, int, bool]]:
         """
         Returns exactly one record containing information about the current
         node’s TUN/TAP adapter.
@@ -281,7 +282,7 @@ class AdminAPI:
         raw = await self._send_request('getMulticastInterfaces')
         return raw['multicast_interfaces']
 
-    async def getRoutes(self)->dict: 
+    async def getRoutes(self)->Dict[str, str]: 
         """
         Returns zero or more records where the subnet (string) is mapped to
         the public key (string).
@@ -370,14 +371,14 @@ class AdminAPI:
         """
         return await self._send_request('removeSourceSubnet', subnet=subnet)
 
-    async def getTransitTrafic(self):
+    async def getTransitTrafic(self)->Dict[str, int]:
         switchpeers = await self.getSwitchPeers()
         return {
             'sent': sum(node['bytes_sent'] for node in switchpeers.values()),
             'recvd': sum(node['bytes_recvd'] for node in switchpeers.values())
         }
 
-    async def getNumOfNodes(self):
+    async def getNumOfNodes(self)->int:
         switchpeers = await self.getSwitchPeers()
         return len(switchpeers)
     
