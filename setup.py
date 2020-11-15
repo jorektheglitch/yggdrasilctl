@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="yggdrasilctl",
-    version="0.0.1a2",
+    version="0.0.1a3",
     author="jorektheglitch",
     author_email="jorektheglitch@yandex.ru",
     description="Wrapper for Yggdrasil Admin API",
@@ -17,5 +17,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
 )
