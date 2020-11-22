@@ -2,7 +2,7 @@ import asyncio
 import json
 
 from datetime import datetime as dt, timedelta as td
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 
 from .utils import connect, preprocess
 from .errors import APIError
@@ -51,7 +51,7 @@ class AdminAPI:
         addr, params = tuple(response.items())[0]
         return dict(addr=addr, **params)
 
-    async def getPeers(self)->List[Dict[str, Any[str, int, td]]]:
+    async def getPeers(self)->List[Dict[str, Union[str, int, td]]]:
         """
         Returns one or more records containing information about active peer
         sessions. The first record typically refers to the current node.
@@ -71,7 +71,7 @@ class AdminAPI:
         response = raw['peers']
         return [preprocess(addr=addr, **params) for addr, params in response.items()]
 
-    async def getSwitchPeers(self)->List[Dict[str, Any[str, int]]]:
+    async def getSwitchPeers(self)->List[Dict[str, Union[str, int]]]:
         """
         Returns zero or more records containing information about switch peers.
 
@@ -121,7 +121,7 @@ class AdminAPI:
         """
         return await self._send_request('removePeer', port=port)
 
-    async def getDHT(self)->List[Dict[str, Any[str, dt]]]:
+    async def getDHT(self)->List[Dict[str, Union[str, dt]]]:
         """
         Returns known nodes in the DHT.
 
@@ -137,7 +137,7 @@ class AdminAPI:
         response = raw['dht']
         return [preprocess(addr=addr, **params) for addr, params in response.items()]
 
-    async def getSessions(self)->List[Dict[str, Any[str, int, bool]]]:
+    async def getSessions(self)->List[Dict[str, Union[str, int, bool]]]:
         """
         Returns zero or more records containing information about open
         sessions between the current Yggdrasil node and other nodes. 
@@ -252,7 +252,7 @@ class AdminAPI:
         )
         return raw['nodeinfo']
 
-    async def getTunTap(self)->Dict[str, Any[str, int, bool]]:
+    async def getTunTap(self)->Dict[str, Union[str, int, bool]]:
         """
         Returns exactly one record containing information about the current
         node’s TUN/TAP adapter.
